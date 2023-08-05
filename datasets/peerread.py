@@ -9,6 +9,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import defaultdict
+from sklearn.model_selection import train_test_split
 
 from .text_data import TextData
 from .score import Scores
@@ -277,8 +278,8 @@ class Dataset(object):
     def __getitem__(self, index):
         if self.tokenized:
             return {
-                'p_input_ids': self.x_p[index]['input_ids'],
-                'p_mask': self.x_p[index]['attention_mask'],
+                'paper_input_ids': self.x_p[index]['input_ids'],
+                'paper_attention_mask': self.x_p[index]['attention_mask'],
                 # 'r_input_ids': self.x_r[index]['input_ids'].squeeze(0),
                 # 'r_mask': self.x_r[index]['attention_mask'].squeeze(0),
                 'labels': self.y[index]
@@ -367,6 +368,21 @@ def kfold(dataset, train_idx, test_idx,
     logger.info('Test: {}'.format(len(test_dataset)))
     
     return (train_dataset, test_dataset), vocab
+
+
+def new_train_test(dataset, aspects, task='reg', concat_reviews=False, split_sentence=False):
+    dataset = PeerRead(dataset)
+    data = dataset.data['train'] + dataset.data['dev'] + dataset.data['test']
+    dataset = Dataset(data, aspects, concat_reviews)
+    # dataset.y_hist('score.png')
+    if split_sentence: dataset.split().preprocess()
+    else: dataset.split().preprocess().unsplit()
+    dataset.set_task(task)
+    idxs = np.arange(len(dataset))
+    train_idx, test_idx = train_test_split(idxs, test_size=0.2)
+    train_dataset = dataset.iloc(train_idx)
+    test_dataset = dataset.iloc(test_idx)
+    return train_dataset, test_dataset
     
     
     

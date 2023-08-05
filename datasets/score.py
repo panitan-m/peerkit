@@ -14,12 +14,10 @@ class Scores(object):
         if task == 'cls':
             self.avg = np.around(self.avg-1)
             self.data = np.array([[[k-1 for k in j] for j in i] for i in self.data], dtype=object)
-        elif task == 'bcls':
+        if task == 'bcls':
             t = 3.5
             self.avg = self.avg > t
             self.data = np.array([[[k>t for k in j] for j in i] for i in self.data], dtype=object)
-        else:
-            raise
         
     def __getitem__(self, index):
         if isinstance(index, int):

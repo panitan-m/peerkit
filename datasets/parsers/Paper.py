@@ -82,6 +82,7 @@ class Paper:
     if len(datas)==0: return None
     data = datas[-1]
 
+
     # Read required fields.
     # assert 'title' in data
     # assert 'abstract' in data
