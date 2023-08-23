@@ -12,8 +12,9 @@ class Scores(object):
         
     def set_task(self, task):
         if task == 'cls':
-            self.avg = np.around(self.avg-1)
-            self.data = np.array([[[k-1 for k in j] for j in i] for i in self.data], dtype=object)
+            # self.avg = np.around(self.avg)-1
+            self.avg = np.array([[round(j) for j in i] for i in self.avg])-1 
+            # self.data = np.array([[[k for k in j] for j in i] for i in self.data], dtype=object)
         if task == 'bcls':
             t = 3.5
             self.avg = self.avg > t

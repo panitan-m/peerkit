@@ -141,6 +141,7 @@ class Dataset(object):
         self.x_p.apply(split_sentence)
         self.x_r.apply(split_sentence)
         longer_than = list(map(lambda x: len(x) > 50, self.x_p))
+        self.paper_ids = self.paper_ids[longer_than]
         self.x_p = self.x_p[longer_than]
         self.x_r = self.x_r[longer_than]
         self.y = self.y[longer_than]
