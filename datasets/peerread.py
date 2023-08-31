@@ -10,6 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from sklearn.model_selection import train_test_split
+from sentence_transformers import SentenceTransformer
 
 from .text_data import TextData
 from .score import Scores
@@ -287,11 +288,11 @@ class Dataset(object):
             }
         elif self.sentence_encoded:
             return {
-                'p_input': self.x_p[index][0],
-                'p_mask': self.x_p[index][1],
-                'r_input': self.x_r[index][0],
-                'r_mask': self.x_r[index][1],
-                'label': self.y[index]
+                'paper_sentence_embeddings': self.x_p[index][0],
+                'paper_sentence_masks': self.x_p[index][1],
+                # 'r_input': self.x_r[index][0],
+                # 'r_mask': self.x_r[index][1],
+                'labels': self.y[index]
             }
         else:
             return {
@@ -349,14 +350,16 @@ def kfold(dataset, train_idx, test_idx,
     if tokenizer is not None and sentence_encoder is not None:
         raise Exception("Cannot use tokenizer and sentence encoder at the same time.")
     
-    if tokenizer is None: 
+    if tokenizer is None and sentence_encoder is None: 
         tokenizer = PeerReadTokenizer(train_dataset)
         
-    train_dataset.tokenize(tokenizer, paper_length, review_length)
-    test_dataset.tokenize(tokenizer, paper_length, review_length)
-    vocab = tokenizer.vocab
+    if tokenizer is not None:
+        train_dataset.tokenize(tokenizer, paper_length, review_length)
+        test_dataset.tokenize(tokenizer, paper_length, review_length)
+        vocab = tokenizer.vocab
         
     if sentence_encoder is not None:
+        sentence_encoder = SentenceTransformer(sentence_encoder)
         train_dataset.sentence_encode(sentence_encoder, paper_length, review_length)
         test_dataset.sentence_encode(sentence_encoder, paper_length, review_length)
         
