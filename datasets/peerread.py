@@ -35,8 +35,7 @@ def split_sentence(input):
 
 
 class PeerRead(object):
-    def __init__(self, dataset, all_set=False):
-        data_dir = '../../research/PeerRead/data'
+    def __init__(self, data_dir, dataset, all_set=False):
         sets = ['train', 'dev', 'test']
         
         self.data = defaultdict(list)
@@ -302,8 +301,8 @@ class Dataset(object):
             }
     
 
-def original_split(dataset, aspects, tokenizer=None, max_length=1000, review_length=200, task='reg', review_vocab=False):
-    dataset = PeerRead(dataset)
+def original_split(data_dir, dataset, aspects, tokenizer=None, max_length=1000, review_length=200, task='reg', review_vocab=False):
+    dataset = PeerRead(data_dir, dataset)
     train_dataset = Dataset(dataset.data['train'], aspects)
     dev_dataset = Dataset(dataset.data['dev'], aspects)
     test_dataset = Dataset(dataset.data['test'], aspects)
@@ -329,8 +328,8 @@ def original_split(dataset, aspects, tokenizer=None, max_length=1000, review_len
     return (train_dataset, dev_dataset, test_dataset), tokenizer.vocab
 
 
-def all_sets(dataset, aspects, task='reg', concat_reviews=False, split_sentence=False):
-    dataset = PeerRead(dataset)
+def all_sets(data_dir, dataset, aspects, task='reg', concat_reviews=False, split_sentence=False):
+    dataset = PeerRead(data_dir, dataset)
     data = dataset.data['train'] + dataset.data['dev'] + dataset.data['test']
     dataset = Dataset(data, aspects, concat_reviews)
     # dataset.y_hist('score.png')
@@ -374,8 +373,8 @@ def kfold(dataset, train_idx, test_idx,
     return (train_dataset, test_dataset), vocab
 
 
-def new_train_test(dataset, aspects, task='reg', concat_reviews=False, split_sentence=False):
-    dataset = PeerRead(dataset)
+def new_train_test(data_dir, dataset, aspects, task='reg', concat_reviews=False, split_sentence=False):
+    dataset = PeerRead(data_dir, dataset)
     data = dataset.data['train'] + dataset.data['dev'] + dataset.data['test']
     dataset = Dataset(data, aspects, concat_reviews)
     # dataset.y_hist('score.png')
